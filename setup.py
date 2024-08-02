@@ -1,13 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='minbit',
+    name='src',
     version='0.0.0',
     packages=find_packages(),
     install_requires=[
-        'click'
+        'click',
     ],
     entry_points='''
-    [console_scripts]
-    minbit=minbit:minbit'''
+        [console_scripts]
+        src=src.cli:cli
+    ''',
 )
