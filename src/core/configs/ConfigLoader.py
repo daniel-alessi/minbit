@@ -20,12 +20,12 @@ def load_data() -> Dict:
     return DEFAULT_WALLET_DATA
 
 
-def save_data(data)-> None:
+def save_data(data) -> None:
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f, indent=4)
 
 
-def add_wallet(wallet: Wallet)-> None:
+def add_wallet(wallet: Wallet) -> None:
     #add code here to store the wallet key
 
     data = load_data()
@@ -45,7 +45,7 @@ def remove_wallet(wallet: Wallet) -> None:
     save_data(data)
 
 
-def check_wallet_alias(data, wallet)-> bool:
+def check_wallet_alias(data, wallet) -> bool:
     for existing_wallet in data["wallets"]:
         if wallet.alias in existing_wallet.keys():
             return True
@@ -55,7 +55,6 @@ def check_wallet_alias(data, wallet)-> bool:
 wallet = Wallet(alias="wallet_alias",
                 address="wallet_address",
                 key="wallet_private_key")
-
 
 add_wallet(wallet)
 data = load_data()
