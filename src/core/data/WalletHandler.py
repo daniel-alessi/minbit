@@ -3,60 +3,71 @@ import json
 from appdirs import user_data_dir
 from typing import Dict
 import keyring
+from src.core.data.AppData import AppData
 from src.core.data.Wallet import Wallet
 
-APP_NAME = "minbit"
-data_dir = user_data_dir(APP_NAME)
-os.makedirs(data_dir, exist_ok=True)
-DATA_FILE = os.path.join(data_dir, "user_data.json")
-WALLET_KEY = "wallets"
-DEFAULT_WALLET_DATA = {WALLET_KEY: []}
 
+class WalletHandler():
 
-def load_data() -> Dict:
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as f:
-            return json.load(f)
-    return DEFAULT_WALLET_DATA
+    def __init__(self):
 
+        self.data_dir = user_data_dir(AppData.APP_NAME)
+        self.data_file = os.path.join(self.data_dir, AppData.WALLET_FILE_NAME)
+        self.default_wallet_data = {}
+        self.wallet_data = self._load_data()
 
-def save_data(data) -> None:
-    with open(DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=4)
+    def get_wallet(self, alias:str):
 
+        return Wallet(alias, self.wallet_data.get(alias).get("address"), keyring.get_password(AppData.APP_NAME, alias))
 
-def add_wallet(wallet: Wallet) -> None:
-    #add code here to store the wallet key
+    def add_wallet(self, alias: str, address: str, key: str):
 
-    data = load_data()
-    if check_wallet_alias(data, wallet):
-        raise IOError("wallet already exists")
-    data[WALLET_KEY].append(wallet.to_dict())
-    save_data(data)
+        if self._check_alias_exists(alias):
+            raise IOError("wallet already exists")
 
+        keyring.set_password(service_name=AppData.APP_NAME, username=alias, password=key)
+        wallet = Wallet(alias, address, key)
+        self.wallet_data[alias] = (wallet.to_dict())
+        self._save_data()
+        self._refresh_data()
 
-def remove_wallet(wallet: Wallet) -> None:
-    #add code here to remove the wallet key
+    def remove_wallet(self, alias:str ):
 
-    data = load_data()
-    if not check_wallet_alias(data, wallet):
-        raise IOError("wallet does not exist")
-    data[WALLET_KEY].remove(wallet.to_dict())
-    save_data(data)
+        if not self._check_alias_exists(alias):
+            raise IOError("wallet doesnt exists")
 
+        keyring.delete_password(service_name=AppData.APP_NAME, username=alias)
+        self.wallet_data.pop(alias)
+        self._save_data()
+        self._refresh_data()
 
-def check_wallet_alias(data, wallet) -> bool:
-    for existing_wallet in data["wallets"]:
-        if wallet.alias in existing_wallet.keys():
+    def _load_data(self) -> Dict:
+        if os.path.exists(self.data_file):
+            with open(self.data_file, 'r') as f:
+                json_data = json.load(f)
+                f.close()
+                return json_data
+
+        os.makedirs(self.data_dir, exist_ok=True)
+        return self.default_wallet_data
+
+    def _refresh_data(self):
+        if os.path.exists(self.data_file):
+            with open(self.data_file, 'r') as f:
+                self.wallet_data = json.load(f)
+                f.close()
+        else:
+            self.wallet_data = self.default_wallet_data
+
+    def _save_data(self) -> None:
+        with open(self.data_file, 'w') as f:
+            json.dump(self.wallet_data, f, indent=4)
+            f.close()
+
+    def _check_alias_exists(self, alias: str) -> bool:
+        if alias in self.wallet_data:
             return True
-    return False
+        return False
 
 
-wallet = Wallet(alias="wallet_alias",
-                address="wallet_address",
-                key="wallet_private_key")
 
-add_wallet(wallet)
-data = load_data()
-remove_wallet(wallet)
-data = load_data()

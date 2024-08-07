@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Set
 
 
 class Wallet():
@@ -8,8 +8,12 @@ class Wallet():
         self.address = address
         self.key = key
 
-    def to_dict(self) -> dict[str, dict[str, str]]:
+    def to_dict(self) -> dict[str, str]:
         return {
-            self.alias: {"address": self.address}
+                 "address": self.address,
+                 "alias": self.alias
         }
+
+    def __str__(self) -> str:
+        return f"Alias: {self.alias}, Address: {self.address}, Key: {self.key}"
 
