@@ -1,14 +1,17 @@
 import click
 
+from src.core.MinBit import MinBit
+
+
 @click.group()
 def cli():
     pass
 
 @click.command()
-def print_message():
-    print("printing ....")
+def wallet():
+    MinBit().make_wallet("alias", "address", "pass")
 
-cli.add_command(print_message)
+cli.add_command(wallet)
 
 if __name__ == '__main__':
     cli()
