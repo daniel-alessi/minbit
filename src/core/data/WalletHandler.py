@@ -1,7 +1,7 @@
 import os
 import json
 from appdirs import user_data_dir
-from typing import Dict
+from typing import Dict, List
 import keyring
 from src.core.data.AppData import AppData
 from src.core.data.Wallet import Wallet
@@ -16,9 +16,15 @@ class WalletHandler():
         self.default_wallet_data = {}
         self.wallet_data = self._load_data()
 
-    def get_wallet(self, alias:str):
+    def list_wallets(self, explicit:bool=False) -> List[Wallet]:
 
-        return Wallet(alias, self.wallet_data.get(alias).get("address"), keyring.get_password(AppData.APP_NAME, alias))
+        return [self.get_wallet(alias, explicit=explicit) for alias in self.wallet_data.keys()]
+
+    def get_wallet(self, alias: str, explicit: bool = False) -> Wallet:
+
+        if explicit:
+            return Wallet(json=self.wallet_data.get(alias), key=keyring.get_password(AppData.APP_NAME, alias))
+        return Wallet(json=self.wallet_data.get(alias))
 
     def add_wallet(self, alias: str, address: str, key: str):
 
@@ -26,12 +32,12 @@ class WalletHandler():
             raise IOError("wallet already exists")
 
         keyring.set_password(service_name=AppData.APP_NAME, username=alias, password=key)
-        wallet = Wallet(alias, address, key)
+        wallet = Wallet(alias=alias, address=address, key=key)
         self.wallet_data[alias] = (wallet.to_dict())
         self._save_data()
         self._refresh_data()
 
-    def remove_wallet(self, alias:str ):
+    def remove_wallet(self, alias: str):
 
         if not self._check_alias_exists(alias):
             raise IOError("wallet doesnt exists")
@@ -68,6 +74,3 @@ class WalletHandler():
         if alias in self.wallet_data:
             return True
         return False
-
-
-

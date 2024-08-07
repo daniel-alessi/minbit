@@ -7,6 +7,10 @@ class MinBit():
 
     def make_wallet(self, alias: str, address: str, key: str ):
 
-        wallet_handler = WalletHandler()
-        wallet_handler.add_wallet(alias=alias, address=address, key=key)
+        WalletHandler().add_wallet( alias=alias, address=address, key=key)
+
+    def list_wallet(self, explicit:bool=False):
+
+        for wallet in WalletHandler().list_wallets(explicit=explicit):
+            print(wallet)
 
