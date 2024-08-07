@@ -2,7 +2,7 @@ import os
 import json
 from appdirs import user_data_dir
 from typing import Dict
-
+import keyring
 from src.core.data.Wallet import Wallet
 
 APP_NAME = "minbit"
@@ -58,7 +58,5 @@ wallet = Wallet(alias="wallet_alias",
 
 add_wallet(wallet)
 data = load_data()
-print(data)
 remove_wallet(wallet)
 data = load_data()
-print(data)
