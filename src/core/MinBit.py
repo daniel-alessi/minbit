@@ -1,17 +1,18 @@
-from src.core.data.WalletHandler import WalletHandler
+from src.core.data.wallet.WalletHandler import WalletHandler
 
 
 class MinBit():
     def __init__(self):
+        self.wallet_handler = WalletHandler()
         pass
 
     def make_wallet(self, alias: str, address: str, key: str ):
 
-        WalletHandler().add_wallet( alias=alias, address=address, key=key)
+        self.wallet_handler.add_wallet( alias=alias, address=address, key=key)
 
     def list_wallet(self, explicit:bool=False):
 
-        for wallet in WalletHandler().list_wallets(explicit=explicit):
+        for wallet in self.wallet_handler.list_wallets(explicit=explicit):
             print(wallet)
 
     def look(self, address: str):
