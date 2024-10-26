@@ -1,8 +1,4 @@
-import json
-import os
-
 import requests
-from appdirs import user_data_dir
 from requests import PreparedRequest, Response
 
 from src.core.data.AppData import AppData
@@ -22,6 +18,9 @@ class RequestManager():
             return session.send(request)
 
     def get_api_key(self) -> str:
+        api_key= keyring.get_password(AppData.APP_NAME, AppData.API_KEY_ALIAS)
+        if api_key is None:
+            raise IOError("no api key found! try setting the api key!")
         return keyring.get_password(AppData.APP_NAME, AppData.API_KEY_ALIAS)
 
     def set_api_key(self, api_key: str):
