@@ -1,4 +1,4 @@
-from src.core.data.wallet.WalletHandler import WalletHandler
+from src.core.wallet.WalletHandler import WalletHandler
 
 
 class MinBit():
