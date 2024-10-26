@@ -14,3 +14,8 @@ class MinBit():
         for wallet in WalletHandler().list_wallets(explicit=explicit):
             print(wallet)
 
+    def look(self, address: str):
+
+        print(f"look: {address}")
+        pass
+
